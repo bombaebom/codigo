@@ -1,0 +1,167 @@
+import hashlib
+
+
+def criptografar_cesar(mensagem, deslocamento):
+    resultado = ""
+
+    for caractere in mensagem:
+        if caractere.isalpha():
+            base = ord("A") if caractere.isupper() else ord("a")
+            novo_caractere = chr(
+                (ord(caractere) - base + deslocamento) % 26 + base
+            )
+            resultado += novo_caractere
+        else:
+            resultado += caractere
+
+    return resultado
+
+
+def descriptografar_cesar(mensagem, deslocamento):
+    return criptografar_cesar(mensagem, -deslocamento)
+
+
+def gerar_hash(texto):
+    return hashlib.sha256(texto.encode()).hexdigest()
+
+
+def verificar_forca_senha(senha):
+    tem_maiuscula = False
+    tem_minuscula = False
+    tem_numero = False
+    tem_caractere_especial = False
+
+    for caractere in senha:
+        if caractere.isupper():
+            tem_maiuscula = True
+        elif caractere.islower():
+            tem_minuscula = True
+        elif caractere.isdigit():
+            tem_numero = True
+        else:
+            tem_caractere_especial = True
+
+    pontuacao = 0
+
+    if len(senha) >= 8:
+        pontuacao += 1
+
+    if tem_maiuscula:
+        pontuacao += 1
+
+    if tem_minuscula:
+        pontuacao += 1
+
+    if tem_numero:
+        pontuacao += 1
+
+    if tem_caractere_especial:
+        pontuacao += 1
+
+    if pontuacao <= 2:
+        return "Fraca"
+    elif pontuacao <= 4:
+        return "Média"
+    else:
+        return "Forte"
+
+
+def ataque_forca_bruta(senha_alvo, tentativas):
+    contador = 0
+
+    for tentativa in tentativas:
+        contador += 1
+
+        if tentativa == senha_alvo:
+            return contador
+
+    return -1
+
+
+def menu():
+    while True:
+        print("\n===== PROTEÇÃO DE INFORMAÇÕES =====")
+        print("1 - Criptografar mensagem")
+        print("2 - Descriptografar mensagem")
+        print("3 - Gerar hash")
+        print("4 - Verificar força da senha")
+        print("5 - Simular força bruta")
+        print("6 - Sair")
+
+        opcao = input("\nEscolha uma opção: ")
+
+        if opcao == "1":
+            mensagem = input("Digite a mensagem: ")
+            deslocamento = int(input("Digite o deslocamento: "))
+
+            resultado = criptografar_cesar(
+                mensagem,
+                deslocamento
+            )
+
+            print("\nMensagem criptografada:")
+            print(resultado)
+
+        elif opcao == "2":
+            mensagem = input("Digite a mensagem criptografada: ")
+            deslocamento = int(input("Digite o deslocamento: "))
+
+            resultado = descriptografar_cesar(
+                mensagem,
+                deslocamento
+            )
+
+            print("\nMensagem descriptografada:")
+            print(resultado)
+
+        elif opcao == "3":
+            texto = input("Digite o texto: ")
+
+            resultado = gerar_hash(texto)
+
+            print("\nHash SHA-256:")
+            print(resultado)
+
+        elif opcao == "4":
+            senha = input("Digite uma senha: ")
+
+            resultado = verificar_forca_senha(senha)
+
+            print(f"\nForça da senha: {resultado}")
+
+        elif opcao == "5":
+            senha_alvo = input("Digite a senha alvo: ")
+
+            tentativas = [
+                "1234",
+                "1111",
+                "0000",
+                "12345",
+                "senha",
+                "admin",
+                "abc123",
+                "qwerty",
+                "python",
+                "python123"
+            ]
+
+            resultado = ataque_forca_bruta(
+                senha_alvo,
+                tentativas
+            )
+
+            if resultado != -1:
+                print(f"\nSenha encontrada: {senha_alvo}")
+                print(f"Tentativas: {resultado}")
+            else:
+                print("\nSenha não encontrada.")
+
+        elif opcao == "6":
+            print("Programa encerrado.")
+            break
+
+        else:
+            print("Opção inválida.")
+
+
+menu()
